@@ -1,0 +1,30 @@
+apiVersion: v1
+data:
+  config: |-
+    {
+        "apiServices": [
+            {
+                "name": "v1beta1.admission.certmanager.k8s.io",
+                "secret": {
+                    "name": "cert-manager-webhook-ca",
+                    "namespace": "default",
+                    "key": "tls.crt"
+                }
+            }
+        ],
+        "validatingWebhookConfigurations": [
+            {
+                "name": "cert-manager-webhook",
+                "file": {
+                    "path": "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                }
+            }
+        ]
+    }
+kind: ConfigMap
+metadata:
+  labels:
+    app: webhook
+    release: cert-manager
+  name: cert-manager-webhook-ca-sync
+  namespace: default

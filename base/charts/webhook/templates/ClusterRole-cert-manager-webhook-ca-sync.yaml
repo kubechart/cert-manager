@@ -1,0 +1,35 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  labels:
+    app: webhook
+    release: cert-manager
+  name: cert-manager-webhook-ca-sync
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - cert-manager-webhook-ca
+  resources:
+  - secrets
+  verbs:
+  - get
+- apiGroups:
+  - admissionregistration.k8s.io
+  resourceNames:
+  - cert-manager-webhook
+  resources:
+  - validatingwebhookconfigurations
+  - mutatingwebhookconfigurations
+  verbs:
+  - get
+  - update
+- apiGroups:
+  - apiregistration.k8s.io
+  resourceNames:
+  - v1beta1.admission.certmanager.k8s.io
+  resources:
+  - apiservices
+  verbs:
+  - get
+  - update

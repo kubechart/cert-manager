@@ -1,0 +1,40 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  labels:
+    app: webhook
+    release: cert-manager
+  name: cert-manager-webhook-ca-sync
+  namespace: default
+spec:
+  jobTemplate:
+    spec:
+      backoffLimit: 20
+      template:
+        metadata:
+          labels:
+            app: ca-helper
+        spec:
+          containers:
+          - args:
+            - -config=/config/config
+            image: quay.io/munnerz/apiextensions-ca-helper:v0.1.0
+            imagePullPolicy: IfNotPresent
+            name: ca-helper
+            resources:
+              limits:
+                cpu: 100m
+                memory: 128Mi
+              requests:
+                cpu: 10m
+                memory: 32Mi
+            volumeMounts:
+            - mountPath: /config
+              name: config
+          restartPolicy: OnFailure
+          serviceAccountName: cert-manager-webhook-ca-sync
+          volumes:
+          - configMap:
+              name: cert-manager-webhook-ca-sync
+            name: config
+  schedule: '@weekly'
